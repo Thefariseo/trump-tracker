@@ -5,19 +5,22 @@ import { usePrices }      from './hooks/usePrices';
 import { useStockPrices } from './hooks/useStockPrices';
 
 // Always-loaded (small, needed immediately)
-import DJTPosition          from './components/DJTPosition';
-import StockKPIs            from './components/StockKPIs';
-import StockBuySellChart    from './components/StockBuySellChart';
-import StockGrid            from './components/StockGrid';
-import PolicyCorrelation    from './components/PolicyCorrelation';
-import TransactionFeed      from './components/TransactionFeed';
-import PortfolioComposition from './components/PortfolioComposition';
-import MirrorInvestment     from './components/MirrorInvestment';
-import FilingTimeline       from './components/FilingTimeline';
-import PortfolioEvolution   from './components/PortfolioEvolution';
-import ConvictionRanking    from './components/ConvictionRanking';
-import RiskMetrics          from './components/RiskMetrics';
-import SectorHeatmap        from './components/SectorHeatmap';
+import DJTPosition            from './components/DJTPosition';
+import StockKPIs              from './components/StockKPIs';
+import StockBuySellChart      from './components/StockBuySellChart';
+import StockGrid              from './components/StockGrid';
+import PolicyCorrelation      from './components/PolicyCorrelation';
+import PolicyTimeline         from './components/PolicyTimeline';
+import TransactionFeed        from './components/TransactionFeed';
+import PortfolioComposition   from './components/PortfolioComposition';
+import MirrorInvestment       from './components/MirrorInvestment';
+import FilingTimeline         from './components/FilingTimeline';
+import PortfolioEvolution     from './components/PortfolioEvolution';
+import ConvictionRanking      from './components/ConvictionRanking';
+import RiskMetrics            from './components/RiskMetrics';
+import SectorHeatmap          from './components/SectorHeatmap';
+import CopyTrumpCalculator    from './components/CopyTrumpCalculator';
+import SignalScorecard        from './components/SignalScorecard';
 
 // Lazy-loaded (heavy API calls, only mount when tab is visited)
 const EquityCurve = lazy(() => import('./components/EquityCurve'));
@@ -370,6 +373,15 @@ function TabPanoramica({ prices, changes, djtManual, setDjtManual, livePortfolio
         </div>
       </div>
 
+      {/* Copy Trump Calculator ← NEW main feature */}
+      <div>
+        <SectionHead
+          title="Calcolatore — Copia Trump"
+          sub="Quanto avresti guadagnato investendo come Trump? Calcola P&L, confronto SPY e tasse italiane"
+        />
+        <CopyTrumpCalculator />
+      </div>
+
       {/* DJT position */}
       <div>
         <SectionHead
@@ -460,6 +472,15 @@ function TabTitoli() {
 function TabPerformance() {
   return (
     <div className="flex flex-col gap-6 fade-up">
+      {/* Signal Scorecard ← NEW */}
+      <div>
+        <SectionHead
+          title="Signal Scorecard"
+          sub="I trade di Trump hanno battuto il mercato? Win rate, alpha medio e dettaglio per ogni posizione"
+        />
+        <SignalScorecard />
+      </div>
+
       {/* Equity curve */}
       <div>
         <SectionHead
@@ -520,10 +541,10 @@ function TabAnalisi() {
       </div>
       <div>
         <SectionHead
-          title="Correlazione politica"
-          sub="Acquisti in relazione agli annunci e alle politiche dell'amministrazione"
+          title="Timeline politica ↔ trading"
+          sub="Ogni evento politico di Q1 2026 messo in relazione con i trade Trump nelle settimane precedenti"
         />
-        <PolicyCorrelation />
+        <PolicyTimeline />
       </div>
       <div>
         <SectionHead
