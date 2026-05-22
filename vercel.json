@@ -1,0 +1,26 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/congress-data",
+      "destination": "/api/congress-data"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/check-filings",
+      "schedule": "0 9 * * *"
+    }
+  ]
+}
