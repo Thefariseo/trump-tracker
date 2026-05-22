@@ -1,99 +1,73 @@
-// Vercel catch-all serverless proxy for Yahoo Finance
-// Intercepts /api/yf/v8/finance/chart/AAPL?interval=1d&range=6mo
-// Handles session crumb automatically so 401s never reach the client.
-//
-// When deployed on Vercel this file takes precedence over the /api/yf rewrite
-// in vercel.json (serverless functions > rewrites). In local dev the Vite proxy
-// is still used (this file is ignored by Vite).
+/**
+ * Vercel serverless proxy for Yahoo Finance
+ * Routes: /api/yf/v8/finance/chart/:ticker  →  historical prices
+ *         /api/yf/v7/finance/quote?symbols=  →  live quotes
+ *
+ * Server-to-server calls bypass CORS entirely.
+ * Tries query1 then query2 as fallback.
+ */
 
-let _crumb   = null;
-let _cookies = null;
-let _crumbTs = 0;
-const CRUMB_TTL = 55 * 60 * 1000; // 55 min (Yahoo crumbs expire in ~1h)
-
-const BASE_HEADERS = {
-  'User-Agent':      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-  'Accept':          'application/json, text/plain, */*',
+const HEADERS = {
+  'User-Agent':      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+  'Accept':          'application/json, */*',
   'Accept-Language': 'en-US,en;q=0.9',
+  'Accept-Encoding': 'gzip, deflate, br',
   'Referer':         'https://finance.yahoo.com/',
+  'Origin':          'https://finance.yahoo.com',
 };
 
-async function obtainCrumb() {
-  // 1. Fetch Yahoo Finance homepage to collect session cookies
-  const home = await fetch('https://finance.yahoo.com/', {
-    headers: BASE_HEADERS,
-    redirect: 'follow',
-    signal: AbortSignal.timeout(8_000),
-  });
-
-  // Collect all Set-Cookie values → single Cookie header string
-  const raw = home.headers.get('set-cookie') ?? '';
-  _cookies = raw
-    .split(/,(?=[^;]+=)/)          // split on commas that start a new cookie
-    .map(c => c.split(';')[0].trim())
-    .filter(Boolean)
-    .join('; ');
-
-  // 2. Exchange cookies for a crumb token
-  const crumbRes = await fetch(
-    'https://query1.finance.yahoo.com/v1/test/getcrumb',
-    { headers: { ...BASE_HEADERS, Cookie: _cookies }, signal: AbortSignal.timeout(5_000) }
-  );
-  const text = await crumbRes.text();
-  if (!text || text.length < 3) throw new Error('Empty crumb response');
-  _crumb   = text.trim();
-  _crumbTs = Date.now();
-}
-
-async function proxyYahoo(path, params) {
-  const qs = new URLSearchParams({ ...params, crumb: _crumb }).toString();
-  const url = `https://query1.finance.yahoo.com/${path}?${qs}`;
-
-  return fetch(url, {
-    headers: { ...BASE_HEADERS, Cookie: _cookies },
-    signal: AbortSignal.timeout(10_000),
-  });
-}
+const SERVERS = [
+  'https://query1.finance.yahoo.com',
+  'https://query2.finance.yahoo.com',
+];
 
 export default async function handler(req, res) {
-  // CORS — allow any origin (this is public market data)
+  // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   if (req.method === 'OPTIONS') { res.status(204).end(); return; }
 
-  // Reconstruct the upstream path from the catch-all [...path] param
-  // Vercel populates req.query.path as an array, e.g. ['v8','finance','chart','AAPL']
-  const pathSegments = req.query.path ?? [];
-  const yPath = Array.isArray(pathSegments) ? pathSegments.join('/') : pathSegments;
+  // Reconstruct path: req.query.path is ['v8','finance','chart','AAPL'] for catch-all
+  const segments = Array.isArray(req.query.path)
+    ? req.query.path
+    : [req.query.path ?? ''];
+  const yPath = segments.join('/');
 
-  // Strip internal Vercel routing params, keep real query params
-  const { path: _p, ...queryParams } = req.query;
+  // Forward all query params except the internal 'path' catch-all
+  const { path: _ignored, ...forwardParams } = req.query;
+  const qs = new URLSearchParams(forwardParams).toString();
 
-  try {
-    // Ensure we have a fresh crumb
-    if (!_crumb || Date.now() - _crumbTs > CRUMB_TTL) {
-      await obtainCrumb();
+  let lastStatus = 502;
+  let lastBody   = null;
+
+  for (const base of SERVERS) {
+    try {
+      const url = `${base}/${yPath}${qs ? `?${qs}` : ''}`;
+      const upstream = await fetch(url, {
+        headers: HEADERS,
+        signal: AbortSignal.timeout(9_000),
+      });
+
+      lastStatus = upstream.status;
+
+      if (upstream.ok) {
+        const data = await upstream.json();
+        res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+        return res.status(200).json(data);
+      }
+
+      // Keep body for debugging
+      try { lastBody = await upstream.text(); } catch {}
+
+    } catch (err) {
+      lastBody = err.message;
     }
-
-    let response = await proxyYahoo(yPath, queryParams);
-
-    // If stale crumb → refresh once and retry
-    if (response.status === 401 || response.status === 403) {
-      await obtainCrumb();
-      response = await proxyYahoo(yPath, queryParams);
-    }
-
-    if (!response.ok) {
-      return res.status(response.status).json({ error: `Yahoo Finance ${response.status}` });
-    }
-
-    const data = await response.json();
-    // Cache aggressively — market data changes every minute at most
-    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
-    res.status(200).json(data);
-
-  } catch (err) {
-    // Graceful degradation — client will fall back to static prices
-    res.status(502).json({ error: err.message });
   }
+
+  // Both servers failed
+  res.status(lastStatus).json({
+    error:   'Yahoo Finance unavailable',
+    status:  lastStatus,
+    details: lastBody,
+  });
 }

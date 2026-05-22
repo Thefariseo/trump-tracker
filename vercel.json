@@ -1,9 +1,10 @@
 {
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs22.x"
+    }
+  },
   "rewrites": [
-    {
-      "source": "/api/congress-data",
-      "destination": "/api/congress-data"
-    },
     {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
