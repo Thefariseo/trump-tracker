@@ -301,7 +301,7 @@ export default function CopyTrumpCalculator() {
         <div className="px-6 pb-6">
           <div className="panel rounded-xl p-6 text-center">
             {!stockPricesLive ? (
-              <p className="text-[12px] text-[#555]">Connessione a Yahoo Finance necessaria per i prezzi live</p>
+              <p className="text-[12px] text-[#555]">Caricamento prezzi di mercato in corso…</p>
             ) : inputAmount === 0 ? (
               <p className="text-[12px] text-[#555]">Inserisci un importo per calcolare</p>
             ) : benchLoading ? (
@@ -474,7 +474,7 @@ export default function CopyTrumpCalculator() {
                   />
                 ))}
               <p className="text-[9px] text-[#444] mt-3 leading-relaxed">
-                Return = prezzo live Yahoo Finance / prezzo di riferimento OGE (filing date).
+                Return = prezzo live (stooq.com) / prezzo di riferimento OGE (filing date).
                 Non rappresenta il prezzo d'acquisto esatto dichiarato — solo un'approssimazione.
               </p>
             </div>
@@ -482,7 +482,7 @@ export default function CopyTrumpCalculator() {
 
           {/* ── Disclaimer ───────────────────────────────────────────────── */}
           <p className="text-[10px] text-[#3a3a3a] leading-relaxed">
-            ⚠ Stima basata su pesi OGE 278-T e prezzi live Yahoo Finance. Non è consulenza finanziaria.
+            ⚠ Stima basata su pesi OGE 278-T e prezzi live di mercato. Non è consulenza finanziaria.
             Copertura attiva: {(coveredWeight * 100).toFixed(0)}% del portafoglio per peso.
           </p>
         </div>
