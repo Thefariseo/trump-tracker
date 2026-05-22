@@ -53,11 +53,9 @@ export default function StockGrid() {
     <div className="card p-5">
       <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
         <div>
-          <h2 className="text-[13px] font-bold text-[#ccc] tracking-tight">
-            Posizioni — {ALL_POSITIONS.length} titoli
-          </h2>
-          <p className="text-[11px] text-[#555] mt-1">
-            Click su una card per espandere analisi, date chiave e grafico prezzi
+          <p className="text-[12px] text-[#555]">
+            <span className="font-bold text-[#aaa]">{ALL_POSITIONS.length} posizioni</span>
+            {' '}· click per espandere analisi, date chiave e grafico prezzi
           </p>
         </div>
 
