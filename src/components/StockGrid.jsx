@@ -53,26 +53,30 @@ export default function StockGrid() {
     <div className="card p-5">
       <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
         <div>
-          <h2 className="text-sm font-semibold text-[#aaa] uppercase tracking-wider">Posizioni per Singolo Titolo</h2>
-          <p className="text-[11px] text-[#444] mt-0.5">
-            {ALL_POSITIONS.length} titoli totali · click per espandere analisi + grafico prezzi
+          <h2 className="text-[13px] font-bold text-[#ccc] tracking-tight">
+            Posizioni — {ALL_POSITIONS.length} titoli
+          </h2>
+          <p className="text-[11px] text-[#555] mt-1">
+            Click su una card per espandere analisi, date chiave e grafico prezzi
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           {/* Search */}
           <div className="relative">
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#333] text-[11px]">⌕</span>
+            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#555] text-[11px] pointer-events-none">⌕</span>
             <input
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Cerca ticker o nome…"
-              className="pl-6 pr-3 py-1 bg-[#111] border border-[#222] rounded text-[11px] text-[#aaa] placeholder-[#333] focus:outline-none focus:border-[#333] w-40"
+              className="pl-7 pr-7 py-1.5 bg-[#171717] border border-[#242424] rounded-lg text-[11px] text-[#bbb] placeholder-[#444] focus:outline-none focus:border-[#333] w-44 transition-colors"
             />
             {search && (
-              <button onClick={() => setSearch('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-[#333] hover:text-[#666] text-[11px]">
+              <button
+                onClick={() => setSearch('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#444] hover:text-[#888] text-[11px] transition-colors"
+              >
                 ✕
               </button>
             )}
@@ -82,31 +86,34 @@ export default function StockGrid() {
           <select
             value={sort}
             onChange={e => setSort(e.target.value)}
-            className="bg-[#111] border border-[#222] rounded px-2 py-1 text-[11px] text-[#666] focus:outline-none focus:border-[#333]"
+            className="bg-[#171717] border border-[#242424] rounded-lg px-2.5 py-1.5 text-[11px] text-[#888] focus:outline-none focus:border-[#333] transition-colors appearance-none cursor-pointer"
           >
             {SORTS.map(s => <option key={s.key} value={s.key}>{s.label}</option>)}
           </select>
         </div>
       </div>
 
-      {/* Filter tabs */}
-      <div className="flex flex-wrap gap-1.5 mb-4">
+      {/* Filter pills */}
+      <div className="flex flex-wrap gap-1.5 mb-5">
         {FILTERS.map(f => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`text-[10px] font-semibold px-2.5 py-1 rounded-full border transition-all ${
+            className={`text-[10px] font-bold px-3 py-1.5 rounded-full border transition-all tracking-wide ${
               filter === f
-                ? 'bg-[#C41E3A]/20 border-[#C41E3A]/40 text-[#C41E3A]'
-                : 'bg-[#111] border-[#1f1f1f] text-[#444] hover:border-[#333] hover:text-[#666]'
+                ? 'bg-[#C41E3A]/15 border-[#C41E3A]/40 text-[#C41E3A]'
+                : 'bg-transparent border-[#222] text-[#555] hover:border-[#333] hover:text-[#888]'
             }`}
           >
-            {f} <span className="opacity-60">({counts[f]})</span>
+            {f}
+            <span className={`ml-1.5 ${filter === f ? 'opacity-80' : 'opacity-50'}`}>
+              ({counts[f]})
+            </span>
           </button>
         ))}
         {needle && (
-          <span className="text-[10px] text-[#555] px-2 py-1">
-            {positions.length} risultati per "{search}"
+          <span className="text-[11px] text-[#666] px-2 py-1.5">
+            {positions.length} risultati per &ldquo;{search}&rdquo;
           </span>
         )}
       </div>

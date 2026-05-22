@@ -1,5 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 
 import { usePrices }      from './hooks/usePrices';
 import { useStockPrices } from './hooks/useStockPrices';
@@ -26,61 +26,62 @@ const TickerPage  = lazy(() => import('./pages/TickerPage'));
 import { ALLOCATIONS, TOTAL_ESTIMATED_NET, NET_SELLERS } from './data/unified';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// CONFIG
+// TABS CONFIG
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const TABS = [
   {
-    id:      'panoramica',
-    label:   'Panoramica',
-    short:   'Home',
-    icon:    (active) => (
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <rect x="1" y="1" width="7" height="7" rx="1.5"
-          stroke={active ? '#D4AF37' : '#444'} strokeWidth="1.5" />
-        <rect x="10" y="1" width="7" height="7" rx="1.5"
-          stroke={active ? '#D4AF37' : '#444'} strokeWidth="1.5" />
-        <rect x="1" y="10" width="7" height="7" rx="1.5"
-          stroke={active ? '#D4AF37' : '#444'} strokeWidth="1.5" />
-        <rect x="10" y="10" width="7" height="7" rx="1.5"
-          stroke={active ? '#D4AF37' : '#444'} strokeWidth="1.5" />
+    id:    'panoramica',
+    label: 'Panoramica',
+    short: 'Home',
+    icon:  (active) => (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="1" y="1" width="6" height="6" rx="1.5"
+          stroke={active ? '#D4AF37' : 'currentColor'} strokeWidth="1.5" />
+        <rect x="9" y="1" width="6" height="6" rx="1.5"
+          stroke={active ? '#D4AF37' : 'currentColor'} strokeWidth="1.5" />
+        <rect x="1" y="9" width="6" height="6" rx="1.5"
+          stroke={active ? '#D4AF37' : 'currentColor'} strokeWidth="1.5" />
+        <rect x="9" y="9" width="6" height="6" rx="1.5"
+          stroke={active ? '#D4AF37' : 'currentColor'} strokeWidth="1.5" />
       </svg>
     ),
   },
   {
-    id:      'titoli',
-    label:   'Titoli',
-    short:   'Titoli',
-    icon:    (active) => (
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <path d="M2 5h14M2 9h10M2 13h12"
-          stroke={active ? '#D4AF37' : '#444'} strokeWidth="1.5" strokeLinecap="round" />
+    id:    'titoli',
+    label: 'Titoli',
+    short: 'Titoli',
+    icon:  (active) => (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M1.5 4.5h13M1.5 8h9M1.5 11.5h11"
+          stroke={active ? '#D4AF37' : 'currentColor'} strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     ),
   },
   {
-    id:      'performance',
-    label:   'Performance',
-    short:   'Perf.',
-    icon:    (active) => (
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <polyline points="1,14 5,9 9,11 13,5 17,2"
-          stroke={active ? '#D4AF37' : '#444'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    id:    'performance',
+    label: 'Performance',
+    short: 'Perf.',
+    icon:  (active) => (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <polyline points="1,13 4.5,8 8,10 12,4 15,1.5"
+          stroke={active ? '#D4AF37' : 'currentColor'} strokeWidth="1.5"
+          strokeLinecap="round" strokeLinejoin="round" fill="none" />
       </svg>
     ),
   },
   {
-    id:      'analisi',
-    label:   'Analisi',
-    short:   'Analisi',
-    icon:    (active) => (
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <circle cx="9" cy="9" r="7.5"
-          stroke={active ? '#D4AF37' : '#444'} strokeWidth="1.5" />
-        <line x1="9" y1="5" x2="9" y2="9.5"
-          stroke={active ? '#D4AF37' : '#444'} strokeWidth="1.5" strokeLinecap="round" />
-        <circle cx="9" cy="12.5" r="0.8"
-          fill={active ? '#D4AF37' : '#444'} />
+    id:    'analisi',
+    label: 'Analisi',
+    short: 'Analisi',
+    icon:  (active) => (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="6.5"
+          stroke={active ? '#D4AF37' : 'currentColor'} strokeWidth="1.5" />
+        <line x1="8" y1="4.5" x2="8" y2="8.5"
+          stroke={active ? '#D4AF37' : 'currentColor'} strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="8" cy="11" r="0.85"
+          fill={active ? '#D4AF37' : 'currentColor'} />
       </svg>
     ),
   },
@@ -111,54 +112,66 @@ function useTabState() {
 
 function Header({ loading, lastUpdated, stockPricesLive }) {
   return (
-    <header className="no-print sticky top-0 z-50 bg-[#0a0a0a]/97 backdrop-blur-md border-b border-[#161616]">
-      <div className="max-w-7xl mx-auto px-4 h-12 flex items-center justify-between gap-4">
+    <header className="no-print sticky top-0 z-50 bg-[#080808]/98 backdrop-blur-md border-b border-[#1a1a1a]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
 
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 flex-shrink-0 hover:opacity-80 transition-opacity">
-          <div className="w-6 h-6 rounded-md bg-[#C41E3A] flex items-center justify-center text-white text-[10px] font-black tracking-tight select-none">
-            T
+        <Link to="/" className="flex items-center gap-2.5 flex-shrink-0 group">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#C41E3A] to-[#7A0E22] flex items-center justify-center shadow-lg flex-shrink-0">
+            <span className="text-white text-[12px] font-black select-none">T</span>
           </div>
-          <span className="text-[13px] font-bold text-white tracking-tight hidden sm:block">
-            Trump Stock Tracker
-          </span>
-          <span className="text-[13px] font-bold text-white tracking-tight sm:hidden">TST</span>
+          <div className="hidden sm:flex flex-col leading-none">
+            <span className="text-[13px] font-bold text-white tracking-tight">Trump Stock</span>
+            <span className="text-[10px] text-[#555] tracking-wider font-medium">TRACKER</span>
+          </div>
+          <span className="text-[13px] font-bold text-white sm:hidden">TST</span>
         </Link>
 
-        {/* Center: live indicator + filing badge */}
-        <div className="flex items-center gap-3 text-[10px]">
+        {/* Center: live + filing */}
+        <div className="flex items-center gap-2.5">
           {stockPricesLive ? (
-            <span className="flex items-center gap-1.5 text-[#22c55e]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />
-              LIVE
-            </span>
+            <div className="flex items-center gap-1.5 bg-green-950/60 text-green-400 border border-green-800/50 px-2.5 py-1 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400 pulse-dot flex-shrink-0" />
+              <span className="text-[10px] font-bold tracking-widest">LIVE</span>
+            </div>
           ) : (
-            <span className="text-[#2a2a2a]">prezzi statici</span>
+            <span className="text-[10px] text-[#444] italic">prezzi statici</span>
           )}
-          <span className="text-[#222] hidden md:block">OGE 278-T · 8 Mag 2026</span>
+          <span className="text-[10px] text-[#444] hidden md:flex items-center gap-1.5 bg-[#111] px-2.5 py-1 rounded-md border border-[#1e1e1e]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#C41E3A] inline-block opacity-60" />
+            OGE 278-T · 8 Mag 2026
+          </span>
         </div>
 
-        {/* Actions */}
+        {/* Right actions */}
         <div className="flex items-center gap-2 flex-shrink-0">
           {lastUpdated && (
-            <span className="text-[10px] text-[#222] hidden lg:block">
-              {lastUpdated instanceof Date ? lastUpdated.toLocaleTimeString('it-IT') : lastUpdated}
+            <span className="text-[10px] text-[#444] hidden lg:block font-mono">
+              {lastUpdated instanceof Date
+                ? lastUpdated.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
+                : lastUpdated}
             </span>
           )}
           <button
             onClick={() => window.print()}
-            className="h-7 px-2.5 rounded text-[10px] text-[#333] border border-[#1e1e1e] hover:border-[#2a2a2a] hover:text-[#555] transition-all"
+            className="h-7 px-3 rounded-lg text-[11px] font-medium text-[#666] border border-[#222] hover:border-[#333] hover:text-[#aaa] transition-all"
             title="Stampa / esporta PDF"
           >
-            ⎙ PDF
+            ↧ PDF
           </button>
           <button
             onClick={() => window.dispatchEvent(new CustomEvent('tst-refresh'))}
             disabled={loading}
-            className="h-7 px-2.5 rounded text-[10px] text-[#444] border border-[#1e1e1e] hover:border-[#2a2a2a] hover:text-[#666] transition-all disabled:opacity-30 flex items-center gap-1"
+            className="h-7 px-3 rounded-lg text-[11px] font-medium text-[#666] border border-[#222] hover:border-[#333] hover:text-[#aaa] transition-all disabled:opacity-30 flex items-center gap-1.5"
           >
-            <span className={loading ? 'animate-spin inline-block' : 'inline-block'}>↻</span>
-            <span className="hidden sm:inline">Refresh</span>
+            <svg
+              className={`w-3 h-3 flex-shrink-0 ${loading ? 'spin-anim' : ''}`}
+              viewBox="0 0 12 12" fill="none"
+            >
+              <path d="M10.5 6a4.5 4.5 0 1 1-1.3-3.2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M9.2 1.5l.7 1.8 1.8-.7" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span className="hidden sm:inline">Aggiorna</span>
           </button>
         </div>
       </div>
@@ -167,14 +180,14 @@ function Header({ loading, lastUpdated, stockPricesLive }) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// DESKTOP TAB NAV (sticky, below header)
+// DESKTOP TAB NAV
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function TabNav({ activeTab, setTab }) {
   return (
-    <nav className="no-print sticky top-12 z-40 bg-[#0a0a0a]/97 backdrop-blur-md border-b border-[#161616] hidden sm:block">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex gap-0">
+    <nav className="no-print sticky top-14 z-40 bg-[#080808]/98 backdrop-blur-md border-b border-[#1a1a1a] hidden sm:block">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex">
           {TABS.map(tab => {
             const active = activeTab === tab.id;
             return (
@@ -182,14 +195,17 @@ function TabNav({ activeTab, setTab }) {
                 key={tab.id}
                 onClick={() => setTab(tab.id)}
                 className={`
-                  relative px-5 py-3 text-[12px] font-medium transition-colors flex items-center gap-2
-                  ${active ? 'text-[#D4AF37]' : 'text-[#444] hover:text-[#666]'}
+                  relative px-5 py-3.5 text-[13px] font-medium transition-all flex items-center gap-2 select-none
+                  ${active
+                    ? 'text-[#D4AF37]'
+                    : 'text-[#666] hover:text-[#aaa] hover:bg-white/[0.02]'
+                  }
                 `}
               >
                 {tab.icon(active)}
                 {tab.label}
                 {active && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#D4AF37] rounded-t-full" />
+                  <span className="absolute bottom-0 left-4 right-4 h-[2px] bg-gradient-to-r from-[#C0961E] via-[#D4AF37] to-[#C0961E] rounded-t-full" />
                 )}
               </button>
             );
@@ -201,12 +217,12 @@ function TabNav({ activeTab, setTab }) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// MOBILE BOTTOM NAV (fixed)
+// MOBILE BOTTOM NAV
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function BottomNav({ activeTab, setTab }) {
   return (
-    <nav className="no-print fixed bottom-0 left-0 right-0 z-50 sm:hidden bg-[#0a0a0a]/97 backdrop-blur-md border-t border-[#161616]">
+    <nav className="no-print fixed bottom-0 left-0 right-0 z-50 sm:hidden bg-[#080808]/98 backdrop-blur-md border-t border-[#1a1a1a]">
       <div className="flex">
         {TABS.map(tab => {
           const active = activeTab === tab.id;
@@ -215,12 +231,12 @@ function BottomNav({ activeTab, setTab }) {
               key={tab.id}
               onClick={() => setTab(tab.id)}
               className={`
-                flex-1 flex flex-col items-center gap-1 py-2.5 transition-colors
-                ${active ? 'text-[#D4AF37]' : 'text-[#2a2a2a]'}
+                flex-1 flex flex-col items-center gap-1.5 py-3 transition-all select-none
+                ${active ? 'text-[#D4AF37]' : 'text-[#555]'}
               `}
             >
               {tab.icon(active)}
-              <span className="text-[9px] font-medium">{tab.short}</span>
+              <span className="text-[9px] font-semibold tracking-wide">{tab.short}</span>
             </button>
           );
         })}
@@ -230,106 +246,145 @@ function BottomNav({ activeTab, setTab }) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SHARED: section heading within a tab
+// SECTION HEADING
 // ═══════════════════════════════════════════════════════════════════════════════
 
-function SectionHead({ title, sub }) {
+export function SectionHead({ title, sub, className = '' }) {
   return (
-    <div className="mb-3">
-      <h2 className="text-[11px] font-bold text-[#2a2a2a] uppercase tracking-widest">{title}</h2>
-      {sub && <p className="text-[10px] text-[#222] mt-0.5">{sub}</p>}
+    <div className={`mb-4 ${className}`}>
+      <div className="section-label">{title}</div>
+      {sub && <p className="text-[11px] text-[#555] mt-1.5 leading-relaxed">{sub}</p>}
     </div>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SHARED: hero KPI strip (used on Panoramica tab)
+// KPI CARD (hero strip)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function KPICard({ label, value, sub, color, subColor }) {
+  return (
+    <div className="card px-5 py-4 flex flex-col gap-2">
+      <div className="text-[10px] font-semibold text-[#555] uppercase tracking-widest leading-none">
+        {label}
+      </div>
+      <div
+        className="text-[28px] sm:text-[32px] font-black font-mono leading-none tracking-tight"
+        style={{ color }}
+      >
+        {value}
+      </div>
+      <div className="text-[11px] font-medium" style={{ color: subColor ?? '#666' }}>
+        {sub}
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// HERO STRIP — KPI overview
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function HeroStrip({ livePortfolioValue, liveValueChange }) {
+  const topTicker = ALLOCATIONS[0];
+
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div className="card px-4 py-3">
-        <div className="text-[9px] text-[#333] uppercase tracking-wider mb-1">Posizioni attive</div>
-        <div className="text-xl font-bold font-mono text-[#22c55e]">{ALLOCATIONS.length}</div>
-        <div className="text-[10px] text-[#444] mt-0.5">net buyers in Q1</div>
-      </div>
+      <KPICard
+        label="Posizioni attive"
+        value={ALLOCATIONS.length}
+        sub="net buyers in Q1 2026"
+        color="#22c55e"
+      />
 
-      <div className="card px-4 py-3">
-        <div className="text-[9px] text-[#333] uppercase tracking-wider mb-1">
-          {livePortfolioValue ? 'Valore live stimato' : 'Net stimato OGE'}
-        </div>
-        <div className="text-xl font-bold font-mono text-[#D4AF37]">
-          ~${((livePortfolioValue ?? TOTAL_ESTIMATED_NET) / 1e6).toFixed(1)}M
-        </div>
-        <div className="text-[10px] mt-0.5">
-          {liveValueChange != null ? (
-            <span className={liveValueChange >= 0 ? 'text-[#22c55e]' : 'text-[#ef4444]'}>
-              {liveValueChange >= 0 ? '+' : ''}{liveValueChange.toFixed(1)}% vs filing
-            </span>
-          ) : (
-            <span className="text-[#444]">da fasce OGE</span>
-          )}
-        </div>
-      </div>
+      <KPICard
+        label={livePortfolioValue ? 'Valore live stimato' : 'Netto stimato OGE'}
+        value={`~$${((livePortfolioValue ?? TOTAL_ESTIMATED_NET) / 1e6).toFixed(1)}M`}
+        sub={
+          liveValueChange != null
+            ? `${liveValueChange >= 0 ? '+' : ''}${liveValueChange.toFixed(1)}% vs filing`
+            : 'fasce midpoint OGE'
+        }
+        color="#D4AF37"
+        subColor={
+          liveValueChange != null
+            ? (liveValueChange >= 0 ? '#22c55e' : '#ef4444')
+            : '#555'
+        }
+      />
 
-      <div className="card px-4 py-3">
-        <div className="text-[9px] text-[#333] uppercase tracking-wider mb-1">Top holding</div>
-        <div className="text-xl font-bold font-mono" style={{ color: ALLOCATIONS[0]?.color ?? '#fff' }}>
-          {ALLOCATIONS[0]?.ticker ?? '—'}
-        </div>
-        <div className="text-[10px] text-[#444] mt-0.5">
-          {ALLOCATIONS[0] ? `${(ALLOCATIONS[0].weight * 100).toFixed(1)}% del portafoglio` : ''}
-        </div>
-      </div>
+      <KPICard
+        label="Top holding"
+        value={topTicker?.ticker ?? '—'}
+        sub={topTicker ? `${(topTicker.weight * 100).toFixed(1)}% del portafoglio` : ''}
+        color={topTicker?.color ?? '#fff'}
+      />
 
-      <div className="card px-4 py-3">
-        <div className="text-[9px] text-[#333] uppercase tracking-wider mb-1">Liquidate / vendute</div>
-        <div className="text-xl font-bold font-mono text-[#ef4444]">{NET_SELLERS.length}</div>
-        <div className="text-[10px] text-[#444] mt-0.5">net sellers / closed</div>
-      </div>
+      <KPICard
+        label="Liquidate / Vendute"
+        value={NET_SELLERS.length}
+        sub="net sellers o chiuse"
+        color="#ef4444"
+      />
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LOADING FALLBACK for lazy components
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function ChartFallback({ label = 'Caricamento…' }) {
+  return (
+    <div className="card p-6 flex flex-col items-center justify-center gap-3 min-h-[180px]">
+      <div className="w-5 h-5 border-2 border-[#D4AF37]/25 border-t-[#D4AF37] rounded-full spin-anim" />
+      <div className="text-[11px] text-[#555]">{label}</div>
     </div>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TAB 1 — PANORAMICA
-// Overview: KPIs + composizione + mirror + DJT
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function TabPanoramica({ prices, changes, djtManual, setDjtManual, livePortfolioValue, liveValueChange }) {
   const [selectedSector, setSelectedSector] = useState(null);
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-6 fade-up">
+      {/* Hero KPIs */}
       <HeroStrip livePortfolioValue={livePortfolioValue} liveValueChange={liveValueChange} />
 
-      {/* Composition + Mirror — linked by sector */}
-      <div className="grid lg:grid-cols-2 gap-5">
-        <PortfolioComposition
-          selectedSector={selectedSector}
-          onSectorClick={setSelectedSector}
+      {/* Composition + Mirror — linked by sector selection */}
+      <div>
+        <SectionHead
+          title="Composizione portafoglio"
+          sub="Allocazioni per settore e strumento mirror per replicare le scelte di Trump"
         />
-        <MirrorInvestment selectedSector={selectedSector} />
+        <div className="grid lg:grid-cols-2 gap-5">
+          <PortfolioComposition
+            selectedSector={selectedSector}
+            onSectorClick={setSelectedSector}
+          />
+          <MirrorInvestment selectedSector={selectedSector} />
+        </div>
       </div>
 
-      {/* DJT */}
-      <div className="card p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="text-[10px] text-[#444] uppercase tracking-wider font-semibold">
-            Posizione DJT — Trump Media &amp; Technology (114.75M azioni)
-          </div>
-          {prices['djt_is_fallback'] && (
-            <span className="text-[9px] text-[#f5a623]/70">⚡ prezzo stimato</span>
-          )}
-        </div>
-        <DJTPosition
-          prices={prices}
-          changes={changes}
-          djtManual={djtManual}
-          setDjtManual={setDjtManual}
-          compact
+      {/* DJT position */}
+      <div>
+        <SectionHead
+          title="Posizione DJT — Trump Media & Technology"
+          sub="114.75 milioni di azioni · asset non-financial dichiarato separatamente"
         />
+        <div className="card p-5">
+          <DJTPosition
+            prices={prices}
+            changes={changes}
+            djtManual={djtManual}
+            setDjtManual={setDjtManual}
+            compact
+          />
+        </div>
       </div>
     </div>
   );
@@ -337,93 +392,152 @@ function TabPanoramica({ prices, changes, djtManual, setDjtManual, livePortfolio
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TAB 2 — TITOLI
-// All positions: summary KPIs + buy/sell chart + full grid
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function TabTitoli() {
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-6 fade-up">
+      {/* KPI stats */}
       <StockKPIs />
 
-      <div className="grid lg:grid-cols-3 gap-5">
-        <div className="lg:col-span-2">
+      {/* Chart + quick stats */}
+      <div>
+        <SectionHead
+          title="Flussi buy / sell per titolo"
+          sub="Volume stimato delle transazioni da fasce OGE (midpoint)"
+        />
+        <div className="grid lg:grid-cols-[1fr_260px] gap-5">
           <StockBuySellChart />
-        </div>
-        <div className="card p-4 flex flex-col justify-between gap-3">
-          <div>
-            <div className="text-[9px] text-[#333] uppercase tracking-wider mb-2">Quick stats</div>
-            {[
-              { label: 'Titoli analizzati', value: `${ALLOCATIONS.length + NET_SELLERS.length}` },
-              { label: 'Net accumulatori', value: `${ALLOCATIONS.length}` },
-              { label: 'Net venditori',    value: `${NET_SELLERS.length}`, red: true },
-              { label: 'Top sector',       value: 'Technology' },
-            ].map(({ label, value, red }) => (
-              <div key={label} className="flex justify-between items-center py-1.5 border-b border-[#141414] last:border-0">
-                <span className="text-[10px] text-[#555]">{label}</span>
-                <span className={`text-[11px] font-bold font-mono ${red ? 'text-[#ef4444]' : 'text-[#888]'}`}>{value}</span>
-              </div>
-            ))}
-          </div>
-          <div className="text-[9px] text-[#222] leading-relaxed">
-            Fonte: OGE 278-T · 8 Mag 2026<br />
-            Valori stimati da bande OGE
+
+          {/* Quick stats sidebar */}
+          <div className="card p-5 flex flex-col gap-4">
+            <div className="section-label">Quick stats</div>
+            <div className="space-y-0">
+              {[
+                { label: 'Titoli analizzati',   value: `${ALLOCATIONS.length + NET_SELLERS.length}` },
+                { label: 'Net accumulatori',    value: `${ALLOCATIONS.length}`,   color: '#22c55e' },
+                { label: 'Net venditori',       value: `${NET_SELLERS.length}`,   color: '#ef4444' },
+                { label: 'Top sector',          value: 'Technology',              color: '#D4AF37' },
+              ].map(({ label, value, color }) => (
+                <div
+                  key={label}
+                  className="flex justify-between items-center py-3 border-b border-[#1a1a1a] last:border-0"
+                >
+                  <span className="text-[12px] text-[#777]">{label}</span>
+                  <span
+                    className="text-[14px] font-bold font-mono"
+                    style={{ color: color ?? '#aaa' }}
+                  >
+                    {value}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="pt-2 border-t border-[#1a1a1a] text-[10px] text-[#444] leading-relaxed">
+              Fonte: OGE 278-T · 8 Mag 2026<br />
+              Valori da fasce OGE (midpoint)
+            </div>
           </div>
         </div>
       </div>
 
-      <StockGrid />
+      {/* Full stock grid */}
+      <div>
+        <SectionHead
+          title="Posizioni per titolo"
+          sub="Clicca su una card per espandere analisi, date chiave e grafico prezzi storico"
+        />
+        <StockGrid />
+      </div>
     </div>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TAB 3 — PERFORMANCE
-// Charts: equity curve vs benchmark + conviction + heatmap
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function TabPerformance() {
   return (
-    <div className="flex flex-col gap-5">
-      {/* Equity curve — lazy loaded, heavy API calls */}
-      <Suspense fallback={
-        <div className="card p-5 h-52 flex flex-col items-center justify-center gap-2">
-          <div className="w-5 h-5 border-2 border-[#D4AF37]/30 border-t-[#D4AF37] rounded-full animate-spin" />
-          <div className="text-[10px] text-[#333]">Caricamento prezzi storici (Yahoo Finance)…</div>
-        </div>
-      }>
-        <EquityCurve />
-      </Suspense>
+    <div className="flex flex-col gap-6 fade-up">
+      {/* Equity curve */}
+      <div>
+        <SectionHead
+          title="Equity curve vs benchmark"
+          sub="Performance stimata del portafoglio Trump pesato per allocazione OGE · base 100 = 6 Gen 2026"
+        />
+        <Suspense fallback={
+          <ChartFallback label="Fetching price history for top 12 positions + SPY + QQQ…" />
+        }>
+          <EquityCurve />
+        </Suspense>
+      </div>
 
-      {/* Conviction + Risk side by side */}
-      <div className="grid lg:grid-cols-2 gap-5">
-        <ConvictionRanking />
-        <RiskMetrics />
+      {/* Conviction + Risk */}
+      <div>
+        <SectionHead
+          title="Conviction & rischio"
+          sub="Score di convinzione per titolo e indice di concentrazione del portafoglio (HHI)"
+        />
+        <div className="grid lg:grid-cols-2 gap-5">
+          <ConvictionRanking />
+          <RiskMetrics />
+        </div>
       </div>
 
       {/* Sector heatmap */}
-      <SectorHeatmap />
+      <div>
+        <SectionHead
+          title="Heatmap settoriale"
+          sub="Intensità degli acquisti settimana per settimana nei vari settori"
+        />
+        <SectorHeatmap />
+      </div>
     </div>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TAB 4 — ANALISI
-// Deep dive: filing history + timeline + policy + feed
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function TabAnalisi() {
   return (
-    <div className="flex flex-col gap-5">
-      <PortfolioEvolution />
-      <FilingTimeline />
-      <PolicyCorrelation />
-      <TransactionFeed />
+    <div className="flex flex-col gap-6 fade-up">
+      <div>
+        <SectionHead
+          title="Evoluzione del portafoglio"
+          sub="Crescita cumulata del valore stimato nel tempo"
+        />
+        <PortfolioEvolution />
+      </div>
+      <div>
+        <SectionHead
+          title="Timeline filing"
+          sub="Cronologia delle transazioni dichiarate"
+        />
+        <FilingTimeline />
+      </div>
+      <div>
+        <SectionHead
+          title="Correlazione politica"
+          sub="Acquisti in relazione agli annunci e alle politiche dell'amministrazione"
+        />
+        <PolicyCorrelation />
+      </div>
+      <div>
+        <SectionHead
+          title="Feed transazioni"
+          sub="Tutte le transazioni dichiarate in ordine cronologico"
+        />
+        <TransactionFeed />
+      </div>
     </div>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// MAIN APP (dashboard)
+// MAIN DASHBOARD
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function MainApp() {
@@ -461,16 +575,17 @@ function MainApp() {
       <TabNav activeTab={activeTab} setTab={setActiveTab} />
 
       {/* Error banner */}
-      {errors.crypto && (
-        <div className="max-w-7xl mx-auto px-4 pt-3">
-          <div className="bg-[#1a1010] border border-[#2a1a1a] rounded-lg px-4 py-2 text-[11px] text-[#f87171]">
-            ⚠️ Feed prezzi non disponibile — dati statici
+      {errors?.crypto && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-4">
+          <div className="bg-red-950/40 border border-red-900/40 rounded-xl px-4 py-2.5 text-[12px] text-red-400 flex items-center gap-2">
+            <span className="text-base">⚠</span>
+            Feed prezzi non disponibile — visualizzazione con dati statici
           </div>
         </div>
       )}
 
-      {/* Tab content — pb-16 on mobile for bottom nav clearance */}
-      <main className="max-w-7xl mx-auto px-4 py-5 pb-24 sm:pb-8">
+      {/* Tab content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 pb-28 sm:pb-10">
         {activeTab === 'panoramica' && (
           <TabPanoramica
             prices={prices}
@@ -481,16 +596,16 @@ function MainApp() {
             liveValueChange={liveValueChange}
           />
         )}
-        {activeTab === 'titoli' && <TabTitoli />}
+        {activeTab === 'titoli'      && <TabTitoli />}
         {activeTab === 'performance' && <TabPerformance />}
-        {activeTab === 'analisi' && <TabAnalisi />}
+        {activeTab === 'analisi'     && <TabAnalisi />}
       </main>
 
       {/* Mobile bottom nav */}
       <BottomNav activeTab={activeTab} setTab={setActiveTab} />
 
-      <footer className="hidden sm:block text-center text-[9px] text-[#1a1a1a] pb-4 pt-1">
-        Fonte: OGE 278-T · May 8, 2026 · Valori stimati — non è consulenza finanziaria
+      <footer className="hidden sm:block text-center text-[10px] text-[#383838] pb-5 pt-1">
+        Fonte: OGE 278-T · May 8, 2026 · Valori stimati da fasce midpoint — non è consulenza finanziaria
       </footer>
     </>
   );
@@ -502,10 +617,10 @@ function MainApp() {
 
 function Widget() {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] p-4">
+    <div className="min-h-screen bg-[#080808] p-5">
       <MirrorInvestment selectedSector={null} />
-      <div className="text-[9px] text-[#1e1e1e] text-center mt-3">
-        trumpstocktracker.com — OGE 278-T
+      <div className="text-[10px] text-[#333] text-center mt-4">
+        trumpstocktracker.com — OGE 278-T · May 2026
       </div>
     </div>
   );
@@ -517,16 +632,16 @@ function Widget() {
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen bg-[#080808]">
       <Routes>
-        <Route path="/"        element={<MainApp />} />
-        <Route path="/widget"  element={<Widget />} />
+        <Route path="/"       element={<MainApp />} />
+        <Route path="/widget" element={<Widget />} />
         <Route
           path="/ticker/:symbol"
           element={
             <Suspense fallback={
-              <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-                <div className="w-6 h-6 border-2 border-[#D4AF37]/30 border-t-[#D4AF37] rounded-full animate-spin" />
+              <div className="min-h-screen bg-[#080808] flex items-center justify-center">
+                <div className="w-7 h-7 border-2 border-[#D4AF37]/25 border-t-[#D4AF37] rounded-full spin-anim" />
               </div>
             }>
               <TickerPage />

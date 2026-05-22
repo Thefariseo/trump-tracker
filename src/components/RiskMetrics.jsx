@@ -1,112 +1,122 @@
 import { ALLOCATIONS, SECTOR_ALLOCATIONS, TOTAL_ESTIMATED_NET } from '../data/unified';
 
-// HHI = Σ(weight_i²) × 10,000  — range [0, 10,000]
-// Perfect diversification at N stocks: 10,000 / N
-const HHI = Math.round(ALLOCATIONS.reduce((s, a) => s + a.weight ** 2, 0) * 10_000);
-const N   = ALLOCATIONS.length;
+// HHI = Σ(weight_i²) × 10,000
+const HHI       = Math.round(ALLOCATIONS.reduce((s, a) => s + a.weight ** 2, 0) * 10_000);
+const N         = ALLOCATIONS.length;
 const HHI_IDEAL = Math.round(10_000 / N);
 
 function riskLevel(hhi) {
-  if (hhi >= 2_500) return { text: 'ALTA CONCENTRAZIONE',  color: '#ef4444' };
-  if (hhi >= 1_500) return { text: 'MODERATA',             color: '#f97316' };
-  if (hhi >= 1_000) return { text: 'BASSA',                color: '#D4AF37' };
-  return                    { text: 'DIVERSIFICATO',        color: '#22c55e' };
+  if (hhi >= 2_500) return { text: 'ALTA',        color: '#ef4444' };
+  if (hhi >= 1_500) return { text: 'MODERATA',    color: '#f97316' };
+  if (hhi >= 1_000) return { text: 'BASSA',       color: '#D4AF37' };
+  return                    { text: 'DIVERSIFICATO', color: '#22c55e' };
 }
 
-const risk = riskLevel(HHI);
-
-// Top 5 + top 10 concentration
-const top5Weight  = ALLOCATIONS.slice(0, 5).reduce((s, a) => s + a.weight, 0) * 100;
-const top10Weight = ALLOCATIONS.slice(0, 10).reduce((s, a) => s + a.weight, 0) * 100;
-
-// Sector HHI
-const sectorHHI = Math.round(SECTOR_ALLOCATIONS.reduce((s, a) => s + a.weight ** 2, 0) * 10_000);
+const risk         = riskLevel(HHI);
+const top5Weight   = ALLOCATIONS.slice(0, 5).reduce((s, a) => s + a.weight, 0) * 100;
+const top10Weight  = ALLOCATIONS.slice(0, 10).reduce((s, a) => s + a.weight, 0) * 100;
+const sectorHHI    = Math.round(SECTOR_ALLOCATIONS.reduce((s, a) => s + a.weight ** 2, 0) * 10_000);
 
 function StatRow({ label, value, sub, color }) {
   return (
-    <div className="flex items-center justify-between py-2 border-b border-[#141414]">
+    <div className="flex items-center justify-between py-3 border-b border-[#1a1a1a] last:border-0">
       <div>
-        <div className="text-[11px] text-[#777]">{label}</div>
-        {sub && <div className="text-[9px] text-[#333] mt-0.5">{sub}</div>}
+        <div className="text-[12px] text-[#888]">{label}</div>
+        {sub && <div className="text-[10px] text-[#555] mt-0.5">{sub}</div>}
       </div>
-      <div className="text-[13px] font-bold font-mono" style={{ color }}>{value}</div>
+      <div className="text-[16px] font-bold font-mono" style={{ color }}>{value}</div>
     </div>
   );
 }
 
-function GaugeSVG({ hhi, ideal }) {
-  // Simple arc gauge 0–2500 mapped to 0–180 degrees
+function GaugeSVG({ hhi }) {
   const max   = 2_500;
   const angle = Math.min((hhi / max) * 180, 180);
   const rad   = (angle - 180) * (Math.PI / 180);
-  const cx = 70, cy = 70, r = 55;
-  const x = cx + r * Math.cos(rad);
-  const y = cy + r * Math.sin(rad);
+  const cx = 80, cy = 72, r = 58;
+  const x   = cx + r * Math.cos(rad);
+  const y   = cy + r * Math.sin(rad);
+  const big = angle > 90 ? 1 : 0;
   const color = hhi >= 2500 ? '#ef4444' : hhi >= 1500 ? '#f97316' : hhi >= 1000 ? '#D4AF37' : '#22c55e';
 
   return (
-    <svg width={140} height={80} viewBox="0 0 140 80">
-      {/* Background arc */}
+    <svg width="160" height="88" viewBox="0 0 160 88" role="img" aria-label={`HHI gauge: ${hhi}`}>
+      {/* Track */}
       <path
         d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`}
-        fill="none" stroke="#1a1a1a" strokeWidth={10} strokeLinecap="round"
+        fill="none" stroke="#1e1e1e" strokeWidth={12} strokeLinecap="round"
       />
-      {/* Filled arc */}
-      <path
-        d={`M ${cx - r} ${cy} A ${r} ${r} 0 ${angle > 90 ? 1 : 0} 1 ${x.toFixed(1)} ${y.toFixed(1)}`}
-        fill="none" stroke={color} strokeWidth={10} strokeLinecap="round"
-      />
-      {/* Labels */}
-      <text x={cx - r - 2} y={cy + 16} fontSize={8} fill="#333" textAnchor="middle">0</text>
-      <text x={cx + r + 2} y={cy + 16} fontSize={8} fill="#333" textAnchor="middle">2.5K</text>
+      {/* Fill */}
+      {hhi > 0 && (
+        <path
+          d={`M ${cx - r} ${cy} A ${r} ${r} 0 ${big} 1 ${x.toFixed(2)} ${y.toFixed(2)}`}
+          fill="none" stroke={color} strokeWidth={12} strokeLinecap="round"
+        />
+      )}
+      {/* Scale labels */}
+      <text x={cx - r - 4} y={cy + 18} fontSize={9} fill="#555" textAnchor="middle">0</text>
+      <text x={cx + r + 4} y={cy + 18} fontSize={9} fill="#555" textAnchor="middle">2.5K</text>
       {/* HHI value */}
-      <text x={cx} y={cy - 4} fontSize={16} fontWeight="bold" fill={color} textAnchor="middle" fontFamily="monospace">
+      <text x={cx} y={cy - 6} fontSize={20} fontWeight="900" fill={color} textAnchor="middle" fontFamily="ui-monospace, monospace">
         {hhi.toLocaleString()}
       </text>
-      <text x={cx} y={cy + 12} fontSize={7} fill="#444" textAnchor="middle">HHI</text>
+      <text x={cx} y={cy + 12} fontSize={9} fill="#555" textAnchor="middle" letterSpacing="2">
+        HHI
+      </text>
     </svg>
   );
 }
 
 export default function RiskMetrics() {
   return (
-    <div className="card p-5">
-      <div className="mb-4">
-        <h2 className="text-sm font-semibold text-white uppercase tracking-wider">
-          Rischio Concentrazione
-        </h2>
-        <p className="text-[11px] text-[#444] mt-0.5">
+    <div className="card p-5 flex flex-col gap-4">
+      {/* Header */}
+      <div>
+        <h2 className="text-[13px] font-bold text-[#ccc] tracking-tight">Rischio Concentrazione</h2>
+        <p className="text-[11px] text-[#555] mt-1">
           Herfindahl–Hirschman Index — misura di concentrazione del portafoglio
         </p>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-5">
-        {/* Left: gauge + HHI reading */}
-        <div className="flex flex-col items-center gap-2">
-          <GaugeSVG hhi={HHI} ideal={HHI_IDEAL} />
+        {/* Gauge column */}
+        <div className="flex flex-col items-center gap-3">
+          <GaugeSVG hhi={HHI} />
 
+          {/* Risk badge */}
           <div
-            className="text-[10px] font-bold px-3 py-1 rounded-full border"
-            style={{ color: risk.color, borderColor: `${risk.color}40`, background: `${risk.color}10` }}
+            className="text-[11px] font-bold px-4 py-1.5 rounded-full"
+            style={{
+              color:      risk.color,
+              border:     `1px solid ${risk.color}35`,
+              background: `${risk.color}10`,
+            }}
           >
-            {risk.text}
+            CONCENTRAZIONE {risk.text}
           </div>
 
-          <div className="grid grid-cols-2 gap-2 w-full mt-1">
-            <div className="bg-[#0e0e0e] border border-[#1a1a1a] rounded-lg p-2 text-center">
-              <div className="text-[9px] text-[#333] mb-1">HHI ideale ({N} titoli)</div>
-              <div className="text-[13px] font-bold font-mono text-[#444]">{HHI_IDEAL.toLocaleString()}</div>
+          {/* Small chips */}
+          <div className="grid grid-cols-2 gap-2 w-full">
+            <div className="panel rounded-xl p-3 text-center">
+              <div className="text-[9px] font-bold text-[#444] uppercase tracking-wider mb-1.5">
+                Ideale ({N} titoli)
+              </div>
+              <div className="text-[16px] font-bold font-mono text-[#555]">
+                {HHI_IDEAL.toLocaleString()}
+              </div>
             </div>
-            <div className="bg-[#0e0e0e] border border-[#1a1a1a] rounded-lg p-2 text-center">
-              <div className="text-[9px] text-[#333] mb-1">Eccesso vs ideale</div>
-              <div className="text-[13px] font-bold font-mono" style={{ color: risk.color }}>
+            <div className="panel rounded-xl p-3 text-center">
+              <div className="text-[9px] font-bold text-[#444] uppercase tracking-wider mb-1.5">
+                Eccesso
+              </div>
+              <div className="text-[16px] font-bold font-mono" style={{ color: risk.color }}>
                 +{(HHI - HHI_IDEAL).toLocaleString()}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right: stats */}
+        {/* Stats column */}
         <div>
           <StatRow
             label="HHI Portafoglio"
@@ -122,7 +132,7 @@ export default function RiskMetrics() {
           />
           <StatRow
             label="Top 5 titoli"
-            sub={ALLOCATIONS.slice(0, 5).map(a => a.ticker).join(', ')}
+            sub={ALLOCATIONS.slice(0, 5).map(a => a.ticker).join(' · ')}
             value={`${top5Weight.toFixed(1)}%`}
             color={top5Weight >= 60 ? '#ef4444' : top5Weight >= 45 ? '#f97316' : '#22c55e'}
           />
@@ -133,14 +143,16 @@ export default function RiskMetrics() {
             color={top10Weight >= 80 ? '#f97316' : '#D4AF37'}
           />
           <StatRow
-            label="Titoli totali"
-            sub="posizioni net positive"
+            label="Posizioni totali"
+            sub="net accumulating"
             value={`${N}`}
             color="#888"
           />
 
-          <div className="mt-3 text-[9px] text-[#2a2a2a] leading-relaxed">
-            Un HHI &lt; 1,500 indica portafoglio diversificato. AMZN da sola ({(ALLOCATIONS[0]?.weight * 100).toFixed(1)}% del portafoglio) è il driver principale dell'HHI elevato.
+          <div className="mt-3 pt-3 border-t border-[#1a1a1a] text-[10px] text-[#444] leading-relaxed">
+            HHI &lt; 1,500 = portafoglio diversificato.{' '}
+            {ALLOCATIONS[0]?.ticker} ({(ALLOCATIONS[0]?.weight * 100).toFixed(1)}% del portafoglio)
+            è il driver principale dell'HHI elevato.
           </div>
         </div>
       </div>

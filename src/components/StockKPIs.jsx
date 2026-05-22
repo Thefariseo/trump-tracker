@@ -2,12 +2,12 @@ import { ALL_POSITIONS, Q1_STATS } from '../data/unified';
 
 function KPI({ label, value, sub, accent, icon }) {
   return (
-    <div className={`bg-[#111] border rounded-xl p-3.5 ${accent ? 'border-[#C41E3A]/25' : 'border-[#1a1a1a]'}`}>
-      <div className="text-[9px] text-[#444] uppercase tracking-wider mb-1">{label}</div>
-      <div className={`text-lg font-bold leading-tight ${accent ? 'text-[#C41E3A]' : 'text-white'}`}>
+    <div className={`card p-4 ${accent ? 'border-[#C41E3A]/30' : ''}`}>
+      <div className="text-[9px] font-bold text-[#555] uppercase tracking-widest mb-2 leading-none">{label}</div>
+      <div className={`text-[22px] font-black font-mono leading-none tracking-tight ${accent ? 'text-[#C41E3A]' : 'text-[#e5e5e5]'}`}>
         {icon && <span className="mr-1">{icon}</span>}{value}
       </div>
-      {sub && <div className="text-[10px] text-[#444] mt-0.5">{sub}</div>}
+      {sub && <div className="text-[10px] text-[#555] mt-2 leading-relaxed">{sub}</div>}
     </div>
   );
 }
@@ -59,17 +59,17 @@ export default function StockKPIs() {
       </div>
 
       {/* Source banner */}
-      <div className="bg-[#0e0e0e] border border-[#1a1a1a] rounded-xl px-4 py-2.5 flex items-center justify-between gap-4">
-        <div className="text-[11px] text-[#444] leading-relaxed">
-          <span className="text-[#D4AF37]/70">Fonte primaria:</span> OGE Form 278-T — Trump, Donald J., 05.08.2026 (113 pagine, estratto completo).
-          Valori stimati con midpoint delle fasce OGE. Dati non sostituiscono consulenza finanziaria o legale.
+      <div className="panel rounded-xl px-4 py-3 flex items-center justify-between gap-4">
+        <div className="text-[11px] text-[#666] leading-relaxed">
+          <span className="text-[#D4AF37]">Fonte:</span> OGE Form 278-T — Trump, Donald J., 05.08.2026 · 113 pagine, estratto completo.
+          Valori stimati con midpoint delle fasce OGE. Non è consulenza finanziaria.
         </div>
         <a
           href={Q1_STATS.sourceUrl}
           target="_blank" rel="noreferrer"
-          className="text-[11px] text-[#D4AF37]/70 hover:text-[#D4AF37] flex-shrink-0 transition-colors"
+          className="text-[11px] font-semibold text-[#D4AF37]/70 hover:text-[#D4AF37] flex-shrink-0 transition-colors whitespace-nowrap"
         >
-          PDF ↗
+          Apri PDF ↗
         </a>
       </div>
     </div>

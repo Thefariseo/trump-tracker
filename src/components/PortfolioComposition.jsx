@@ -113,13 +113,13 @@ export default function PortfolioComposition({ onSectorClick, selectedSector }) 
       {/* Header */}
       <div className="flex items-start justify-between gap-4 mb-4">
         <div>
-          <h2 className="text-sm font-semibold text-white">Estimated Portfolio Composition</h2>
-          <p className="text-[11px] text-[#444] mt-0.5">
-            9 filing 278-T · Net stimato <span className="text-[#22c55e]">~${totalNetM}M</span>
+          <h2 className="text-[13px] font-bold text-[#ccc] tracking-tight">Portfolio Composition</h2>
+          <p className="text-[11px] text-[#555] mt-1">
+            Net stimato <span className="text-[#22c55e] font-semibold">~${totalNetM}M</span>
             {selectedSector && (
               <button onClick={() => onSectorClick?.(null)}
-                className="ml-2 text-[#D4AF37]/70 hover:text-[#D4AF37] underline">
-                {selectedSector} ✕
+                className="ml-2 text-[#D4AF37] hover:opacity-70 transition-opacity font-medium">
+                · {selectedSector} ✕
               </button>
             )}
           </p>
@@ -127,8 +127,10 @@ export default function PortfolioComposition({ onSectorClick, selectedSector }) 
         <div className="flex gap-1">
           {[['sector', 'Settori'], ['stocks', 'Titoli'], ['treemap', 'Mappa']].map(([v, lbl]) => (
             <button key={v} onClick={() => setTab(v)}
-              className={`text-[10px] px-2.5 py-1 rounded border transition-colors ${
-                tab === v ? 'bg-[#1a1a1a] border-[#2a2a2a] text-white' : 'border-transparent text-[#444] hover:text-[#666]'
+              className={`text-[10px] font-semibold px-3 py-1.5 rounded-lg border transition-all ${
+                tab === v
+                  ? 'bg-[#1e1e1e] border-[#2a2a2a] text-[#ccc]'
+                  : 'border-transparent text-[#555] hover:text-[#888]'
               }`}>
               {lbl}
             </button>
@@ -194,7 +196,7 @@ export default function PortfolioComposition({ onSectorClick, selectedSector }) 
               );
             })}
             {onSectorClick && (
-              <p className="text-[9px] text-[#2a2a2a] pt-1">Clicca un settore per filtrare il Mirror Investment →</p>
+              <p className="text-[9px] text-[#444] pt-1">Clicca un settore per filtrare il Mirror Investment →</p>
             )}
           </div>
         </div>
