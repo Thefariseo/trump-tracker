@@ -3,14 +3,34 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  // Proxy Yahoo Finance API calls to avoid CORS in development
   server: {
     proxy: {
-      '/api/yf': {
+      // /api/chart?ticker=AMZN&interval=1d&range=6mo
+      '/api/chart': {
         target: 'https://query1.finance.yahoo.com',
         changeOrigin: true,
-        rewrite: path => path.replace(/^\/api\/yf/, ''),
+        rewrite: (path) => {
+          const qs  = path.split('?')[1] ?? '';
+          const p   = new URLSearchParams(qs);
+          const ticker   = p.get('ticker') ?? '';
+          const interval = p.get('interval') ?? '1d';
+          const range    = p.get('range') ?? '6mo';
+          return `/v8/finance/chart/${encodeURIComponent(ticker)}?interval=${interval}&range=${range}`;
+        },
       },
+      // /api/quote?symbols=AMZN,ORCL&fields=...
+      '/api/quote': {
+        target: 'https://query1.finance.yahoo.com',
+        changeOrigin: true,
+        rewrite: (path) => {
+          const qs  = path.split('?')[1] ?? '';
+          const p   = new URLSearchParams(qs);
+          const symbols = p.get('symbols') ?? '';
+          const fields  = p.get('fields')  ?? 'regularMarketPrice,regularMarketChangePercent';
+          return `/v7/finance/quote?symbols=${symbols}&fields=${fields}`;
+        },
+      },
+      // Congress data proxy
       '/api/congress-data': {
         target: 'https://house-stock-watcher-data.s3-us-east-2.amazonaws.com',
         changeOrigin: true,
@@ -22,7 +42,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          'react-vendor':   ['react', 'react-dom'],
+          'react-vendor':    ['react', 'react-dom'],
           'recharts-vendor': ['recharts'],
         },
       },

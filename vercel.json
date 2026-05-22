@@ -1,22 +1,14 @@
 {
   "rewrites": [
-    {
-      "source": "/((?!api/).*)",
-      "destination": "/index.html"
-    }
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
       "source": "/api/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" }
-      ]
+      "headers": [{ "key": "Access-Control-Allow-Origin", "value": "*" }]
     }
   ],
   "crons": [
-    {
-      "path": "/api/check-filings",
-      "schedule": "0 9 * * *"
-    }
+    { "path": "/api/check-filings", "schedule": "0 9 * * *" }
   ]
 }
