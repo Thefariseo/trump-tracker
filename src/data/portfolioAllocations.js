@@ -20,7 +20,7 @@ export const PORTFOLIO_STOCKS = [
   { ticker: 'ORCL', name: 'Oracle',              sector: 'Technology',   buy_total:  4_644_000, sell_total:      8_000, ref_price: 168,   color: '#F80000' },
   { ticker: 'NVDA', name: 'Nvidia',              sector: 'Technology',   buy_total:  3_133_000, sell_total:    650_000, ref_price: 115,   color: '#76B900' },
   { ticker: 'ADBE', name: 'Adobe',               sector: 'Technology',   buy_total:  2_737_000, sell_total:          0, ref_price: 375,   color: '#FF0000' },
-  { ticker: 'NOW',  name: 'ServiceNow',          sector: 'Technology',   buy_total:  2_247_000, sell_total:          0, ref_price: 1100,  color: '#62D84E' },
+  { ticker: 'NOW',  name: 'ServiceNow',          sector: 'Technology',   buy_total:  2_247_000, sell_total:          0, ref_price: 110,   color: '#62D84E' }, // 10:1 split post-Jan 2026 (pre-split: 1100)
   { ticker: 'WDAY', name: 'Workday',             sector: 'Technology',   buy_total:  2_247_000, sell_total:          0, ref_price: 230,   color: '#2E9BF5' },
   { ticker: 'AVGO', name: 'Broadcom',            sector: 'Technology',   buy_total:  2_557_000, sell_total:    375_000, ref_price: 230,   color: '#CC0000' },
   { ticker: 'SNPS', name: 'Synopsys',            sector: 'Technology',   buy_total:  2_080_000, sell_total:          0, ref_price: 480,   color: '#6B3FAB' },
@@ -40,7 +40,7 @@ export const PORTFOLIO_STOCKS = [
   // ── CONSUMER & RETAIL ───────────────────────────────────────────────────
   { ticker: 'COST', name: 'Costco',              sector: 'Consumer',     buy_total:  2_773_000, sell_total:          0, ref_price: 980,   color: '#005DAA' },
   { ticker: 'DIS',  name: 'Disney',              sector: 'Consumer',     buy_total:  2_327_000, sell_total:    175_000, ref_price: 95,    color: '#113CCF' },
-  { ticker: 'BKNG', name: 'Booking Holdings',    sector: 'Consumer',     buy_total:  1_366_000, sell_total:          0, ref_price: 5_000, color: '#003580' },
+  { ticker: 'BKNG', name: 'Booking Holdings',    sector: 'Consumer',     buy_total:  1_366_000, sell_total:          0, ref_price: 167,   color: '#003580' }, // 30:1 split post-Jan 2026 (pre-split: 5000)
   { ticker: 'HD',   name: 'Home Depot',          sector: 'Consumer',     buy_total:  1_163_000, sell_total:          0, ref_price: 380,   color: '#F96302' },
   { ticker: 'WMT',  name: 'Walmart',             sector: 'Consumer',     buy_total:  1_180_000, sell_total:     32_000, ref_price: 95,    color: '#007DC6' },
   { ticker: 'DASH', name: 'DoorDash',            sector: 'Consumer',     buy_total:    872_000, sell_total:          0, ref_price: 185,   color: '#FF3008' },
@@ -57,7 +57,7 @@ export const PORTFOLIO_STOCKS = [
   { ticker: 'EME',  name: 'EMCOR Group',         sector: 'Industrials',  buy_total:  1_332_000, sell_total:          0, ref_price: 350,   color: '#003087' },
   { ticker: 'HBAN', name: 'Huntington Bancshares',sector:'Financials',   buy_total:  1_200_000, sell_total:          0, ref_price: 16,    color: '#006747' },
   // ── MEDIA & STREAMING ───────────────────────────────────────────────────
-  { ticker: 'NFLX', name: 'Netflix',             sector: 'Media',        buy_total:  2_772_000, sell_total:    450_000, ref_price: 1_050, color: '#E50914' },
+  { ticker: 'NFLX', name: 'Netflix',             sector: 'Media',        buy_total:  2_772_000, sell_total:    450_000, ref_price: 105,   color: '#E50914' }, // 10:1 split post-Jan 2026 (pre-split: 1050)
   { ticker: 'APP',  name: 'AppLovin',            sector: 'Media / AdTech',buy_total: 856_000, sell_total:          0, ref_price: 380,   color: '#000000' },
   // ── FINANCIALS ──────────────────────────────────────────────────────────
   { ticker: 'SNOXX',  name: 'Schwab Govt Money Fund', sector: 'Financials / Cash', buy_total: 2_016_000, sell_total: 8_000, ref_price: 1, color: '#1A6297' },
